@@ -19,11 +19,12 @@ import com.rj.hw.model.Users;
 @RequestMapping("/service")
 public class UsersController {
 	
-	protected static final String DB_URL = "jdbc:oracle:thin:tl5/tl5@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=stgrac-scan)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=tl5prd_rac.prod.elemica.com)))";
+	protected static final String DB_URL = "jdbc:oracle:thin:tl5/tl5@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=stgrac-scan)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=t_rac.prod.eleica.com)))";
 	
 
 	@RequestMapping(value = "/allUsers", method = RequestMethod.GET)
 	public List<Users> getUsers(){
+		List<Users> users = new ArrayList<>();
 		Connection dbConn = null;
 		try {
 			Class.forName("oracle.jdbc.OracleDriver");
@@ -35,8 +36,6 @@ public class UsersController {
 			// Getting the integration_stage_content
 			ResultSet rs = st
 					.executeQuery("SELECT person_id, FIRST_NAME, LAST_NAME, USER_ID FROM USERS WHERE ROWNUM <= 20 ");
-			
-			List<Users> users = new ArrayList<>();
 			
 			if (rs.next()) {
 				Users user = new Users();
@@ -51,7 +50,13 @@ public class UsersController {
 			return users;
 			
 		} catch (Exception e) {
+			
 			e.printStackTrace();
+			Users user = new Users();
+			user.setFirstName("DB Error");
+			user.setLastName("DB Error");
+			users.add(user);
+			
 		} finally {
 			if (dbConn != null) {
 				try {
